@@ -37,9 +37,9 @@ class Cromossomo():
         self.set_valor(novo_valor)
 
     def crossover(self, outro_cromossomo):
-        split_index = int(random.random() * self.tamanho)
-        novo_valor = ""
-        if random.random() > .5:
+        split_index = int(random.random() * self.tamanho) ##Gera o índice onde vai ocorrer a troca de Genes
+        novo_valor = []
+        if random.random() > .5:##Se a probabilidade for maior que 50%
             novo_valor = self.valor[0:split_index] + outro_cromossomo.valor[split_index:len(outro_cromossomo.valor)]
         else:
             novo_valor = outro_cromossomo.valor[0:split_index] + self.valor[split_index:len(outro_cromossomo.valor)]
@@ -48,15 +48,28 @@ class Cromossomo():
         return novo_cromossomo
 
     def mutacao(self, chance_mutacao):
-        inicio, aux, fim = ['','','']
+        inicio, fim = [[],[]]
         for i in range(self.tamanho):
             if random.random() < chance_mutacao:
                 inicio = self.valor[0:i]
                 fim = self.valor[i+1:self.tamanho]
                 aux = self.valor[i]
-                if aux == '1': aux = '0'
-                else: aux = '1'
-                self.set_valor(inicio+aux+fim)
+                if type(aux) == int : aux = self.getLetraRandom() ##Coloca uma letra aleatória na posição mutada
+                else: aux = random.randint(0,9) ##Coloca um número, caso contrário
+                self.valor = self.concatena_valores(inicio,aux,fim)
+                
+    def concatena_valores(self, a ,b ,c):
+        resultado = []
+        for i in range(len(a)):
+            resultado.append(a[i])
+            
+        resultado.append(b)
+        
+        for i in range(len(c)):
+            resultado.append(c[i])
+        
+        return resultado
+            
 
     def valor_real(self, inf = 0, sup = 100):
         return inf + (sup - inf)/(2**self.tamanho - 1)*int(self.valor, 2)
