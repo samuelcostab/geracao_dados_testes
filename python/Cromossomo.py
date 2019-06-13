@@ -7,7 +7,7 @@ class Cromossomo():
         self.lista_modelos = self.criaListaModelos()
         self.tamanho = tamanho
         self.valor = []
-        self.avaliacao = 0
+        self.avaliacao_cobertura = 0
 
     
     def criaListaModelos(self):##Esta sendo usado
@@ -24,8 +24,8 @@ class Cromossomo():
         
         return self.lista_modelos[1][i]
     
-    def set_valor(self, novo_valor):##Esta sendo usado
-        self.valor = novo_valor
+    def set_valor(self,split_index, novo_valor):
+        self.valor = novo_valor[0:split_index] + self.valor[split_index:self.tamanho]
     
     def inicializar(self):##Esta sendo usado
         novo_valor = []
@@ -34,17 +34,23 @@ class Cromossomo():
                 novo_valor.append(random.randint(0,9))
             else: novo_valor.append(self.getLetraRandom())
                 
-        self.set_valor(novo_valor)
+        self.valor = novo_valor
 
-    def crossover(self, outro_cromossomo):
+    def crossover(self,outro_cromossomo, tam_filho):
+        novo_cromossomo = Cromossomo(tam_filho)
+        novo_cromossomo.inicializar()
+        
         split_index = int(random.random() * self.tamanho) ##Gera o índice onde vai ocorrer a troca de Genes
         novo_valor = []
         if random.random() > .5:##Se a probabilidade for maior que 50%
             novo_valor = self.valor[0:split_index] + outro_cromossomo.valor[split_index:len(outro_cromossomo.valor)]
         else:
             novo_valor = outro_cromossomo.valor[0:split_index] + self.valor[split_index:len(outro_cromossomo.valor)]
-        novo_cromossomo = Cromossomo(self.tamanho)
-        novo_cromossomo.set_valor(novo_valor)
+        
+        tamanho_pai = self.tamanho
+        
+        novo_cromossomo.set_valor(tamanho_pai, novo_valor)
+        
         return novo_cromossomo
 
     def mutacao(self, chance_mutacao):
@@ -69,18 +75,15 @@ class Cromossomo():
             resultado.append(c[i])
         
         return resultado
-            
 
-    def valor_real(self, inf = 0, sup = 100):
-        return inf + (sup - inf)/(2**self.tamanho - 1)*int(self.valor, 2)
-
-    def avaliar(self, modelo):##Esta sendo usado
-        for i in range(len(modelo)):
-            if type(self.valor[i]) == type(modelo[i]):
-                self.avaliacao += 1
-
-        return self.avaliacao
+    def avaliar(self):##Em construção
+        print("Av. Cromossomo: {}".format(self.valor))
+        cobertura = int(input("Cobertura atingida:"))
+        
+        self.avaliacao_cobertura = cobertura / 100
+        
+        return self.avaliacao_cobertura
 
     def __repr__(self):
 
-        return "cromossomo:[%s] avaliacao[%.2f]" % (self.valor, self.avaliacao)
+        return "cromossomo:[%s] avaliacao[%.2f]" % (self.valor, self.avaliacao_cobertura)

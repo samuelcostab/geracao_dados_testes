@@ -15,67 +15,65 @@ class GATest():
     def inicializar_populacao(self, tam_cromossomo):
         for i in range(self.tam_populacao):
             self.populacao.append(Cromossomo(tam_cromossomo))
-        for cromossomo in self.populacao: cromossomo.inicializar()
-            
-    def avaliar_populacao(self,modelo):
         for cromossomo in self.populacao:
-            self.soma_avaliacoes += cromossomo.avaliar(modelo)
+            cromossomo.inicializar()
+            print(cromossomo)
+            
+    def avaliar_populacao(self):##Em construção
+        for cromossomo in self.populacao:
+            self.soma_avaliacoes += cromossomo.avaliar()
         
-        return sorted(self.populacao, key = lambda x: x.avaliacao, reverse=True)
+        return self.populacao
 
     def roleta(self):
         limite = random.random() * self.soma_avaliacoes ##Gera um limite baseado na avaliação da População
         i, aux = [0, 0]
-        ##random.shuffle(self.populacao) ## "Embaralha" a população aleatoriamente
-        while aux < limite and i < self.tam_populacao:
-            aux += self.populacao[i].avaliacao
+        random.shuffle(self.populacao) ## "Embaralha" a população aleatoriamente
+        while aux <= limite and i < self.tam_populacao:
+            aux += self.populacao[i].avaliacao_cobertura
             i += 1
         i -= 1
         return i       
 
-    def nova_geracao(self):
+    def nova_geracao(self, tam_filhos):
         nova_populacao = []
         for i in range(self.tam_populacao):
             pai1 = self.populacao[self.roleta()]
             pai2 = self.populacao[self.roleta()]
-            filho = pai1.crossover(pai2)
+            filho = pai1.crossover(pai2, tam_filhos)
             filho.mutacao(.05)
             nova_populacao.append(filho)
         return nova_populacao
     
-    def informaModelo(self):
-        print("Digite seu modelo:")
-        input_model = input()
-        input_model_split = input_model.split()
-        model = []
-        for i in input_model_split:
-            if re.match('^\d+$',i): model.append(int(i))
-            else: model.append(i)
-                
-        return model
-    
     def executar(self):
-        model = self.informaModelo()
         populacoes = []
-        tam_model = len(model)
+        tam_cromossomo = 1
+        self.inicializar_populacao(tam_cromossomo)    
+        populacoes.append(self.avaliar_populacao())
         
-        self.inicializar_populacao(tam_model)
-        ordenado = self.avaliar_populacao(model)
-        
-        
-        for i in range(self.geracoes):
-            self.melhores.append(ordenado[0])
-            populacoes.append(self.populacao)
-            for top in ordenado:
-                print("geração {}, Cromossomo:{}".format(i, top))
+        tam_cromossomo = 2
+        while(tam_cromossomo <= 10):
+            print("\n*** Geracao {} ***".format(tam_cromossomo))
+            self.populacao = self.nova_geracao(tam_cromossomo)
+            populacoes.append(self.avaliar_populacao())
+            for ind in self.populacao:
+                print(ind)
             
-            self.populacao = self.nova_geracao()
-            ordenado = self.avaliar_populacao(model)
+            tam_cromossomo += 1
         
-        print("\n############## BESTS ######################\n")
-        for top in sorted(self.melhores, key = lambda x: x.avaliacao, reverse = True):
-            print(top)
-        print("\n############## BESTS ######################\n")
+        ##for tam_cromossomo in range(8):
+            
+        
+        
+        
+        
 
-ga = GATest(5,10)
-ga.executar()
+        
+
+        
+
+
+        
+if __name__ == "__main__":
+    ga = GATest(4,5)     
+    ga.executar()
