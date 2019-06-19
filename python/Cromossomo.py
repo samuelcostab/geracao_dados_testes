@@ -7,10 +7,14 @@ class Cromossomo():
         self.lista_modelos = self.criaListaModelos()
         self.tamanho = tamanho
         self.valor = []
+        self.cobertura = 0
         self.avaliacao_cobertura = 0
+        self.probabilidade_acumulada = 0
+        
+    
 
     
-    def criaListaModelos(self):##Esta sendo usado
+    def criaListaModelos(self):
         mod1 = list(range(0,10))
         mod2 = list(string.ascii_uppercase)
         
@@ -19,7 +23,7 @@ class Cromossomo():
         
         return modelo
         
-    def getLetraRandom(self):##Esta sendo usado
+    def getLetraRandom(self):
         i = random.randint(0,25)
         
         return self.lista_modelos[1][i]
@@ -27,7 +31,7 @@ class Cromossomo():
     def set_valor(self,split_index, novo_valor):
         self.valor = novo_valor[0:split_index] + self.valor[split_index:self.tamanho]
     
-    def inicializar(self):##Esta sendo usado
+    def inicializar(self):
         novo_valor = []
         for i in range(self.tamanho):
             if random.random() < .5: ##Se valor.randômico < 0.50, adiciona um numero aleatório
@@ -75,15 +79,16 @@ class Cromossomo():
             resultado.append(c[i])
         
         return resultado
-
-    def avaliar(self):##Em construção
-        print("Av. Cromossomo: {}".format(self.valor))
-        cobertura = int(input("Cobertura atingida:"))
+    
+    def set_cobertura(self, cobertura):
+        self.cobertura = cobertura / 100
+    
+    def avaliar_cobertura(self, soma_coberturas):##Em construção       
+        if(soma_coberturas > 0):
+            ##total = 100%
+            total = 1
+            self.avaliacao_cobertura = (self.cobertura * total) / soma_coberturas
         
-        self.avaliacao_cobertura = cobertura / 100
-        
-        return self.avaliacao_cobertura
 
     def __repr__(self):
-
         return "cromossomo:[%s] avaliacao[%.2f]" % (self.valor, self.avaliacao_cobertura)
